@@ -1,8 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const User = require('./models/User');
-const Team = require('./models/Team');
-const Project = require('./models/Project');
+const User = require('../models/userModel'); // Correct path
+const Team = require('../models/teamModel'); // Correct path
+const Project = require('../models/projectModel'); // Correct path
 
 const resolvers = {
   Query: {
