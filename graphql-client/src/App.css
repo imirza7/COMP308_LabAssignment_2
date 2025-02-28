@@ -30,6 +30,7 @@
 .navbar-links {
   display: flex;
   gap: 20px;
+  align-items: center;
 }
 
 .navbar-link {
@@ -37,10 +38,19 @@
   text-decoration: none;
   font-size: 1rem;
   transition: color 0.3s ease;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .navbar-link:hover {
   color: #0056b3;
+}
+
+.navbar-user {
+  color: #fff;
+  font-size: 1rem;
+  margin-right: 10px;
 }
 
 /* Home Styles */

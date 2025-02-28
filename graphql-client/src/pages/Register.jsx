@@ -28,17 +28,18 @@ const Register = () => {
     e.preventDefault();
     try {
       const { data } = await register({ variables: { username, email, password, role } });
-      localStorage.setItem('token', data.register.token); // Store token in localStorage
-      navigate('/dashboard'); // Redirect to dashboard after registration
+      localStorage.setItem('token', data.register.token); // store token
+      localStorage.setItem('user', JSON.stringify(data.register.user)); // store user info (including role)
+      navigate('/dashboard'); // redirect to dashboard
     } catch (err) {
       console.error('Registration failed:', err.message);
     }
   };
 
   return (
-    <div>
+    <div className="register-container">
       <h1>Register</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="register-form">
         <input
           type="text"
           placeholder="Username"
@@ -60,11 +61,15 @@ const Register = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <select value={role} onChange={(e) => setRole(e.target.value)}>
+        <select
+          value={role}
+          onChange={(e) => setRole(e.target.value)}
+          className="role-select"
+        >
           <option value="Member">Member</option>
           <option value="Admin">Admin</option>
         </select>
-        <button type="submit">Register</button>
+        <button type="submit" className="btn">Register</button>
       </form>
     </div>
   );

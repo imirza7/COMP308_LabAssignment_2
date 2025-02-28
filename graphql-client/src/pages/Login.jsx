@@ -26,17 +26,18 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await login({ variables: { email, password } });
-      localStorage.setItem('token', data.login.token); // Store token in localStorage
-      navigate('/dashboard'); // Redirect to dashboard after login
+      localStorage.setItem('token', data.login.token); // store token
+      localStorage.setItem('user', JSON.stringify(data.login.user)); // store user info (including role)
+      navigate('/dashboard'); // redirect to dashboard
     } catch (err) {
       console.error('Login failed:', err.message);
     }
   };
 
   return (
-    <div>
+    <div className="login-container">
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="login-form">
         <input
           type="email"
           placeholder="Email"
@@ -51,7 +52,7 @@ const Login = () => {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <button type="submit">Login</button>
+        <button type="submit" className="btn">Login</button>
       </form>
     </div>
   );
