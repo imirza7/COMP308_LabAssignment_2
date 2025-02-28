@@ -27,7 +27,7 @@ const Login = () => {
     try {
       const { data } = await login({ variables: { email, password } });
       localStorage.setItem('token', data.login.token); // Store token in localStorage
-      navigate('/dashboard'); // Redirect to dashboard
+      navigate('/dashboard'); // Redirect to dashboard after login
     } catch (err) {
       console.error('Login failed:', err.message);
     }

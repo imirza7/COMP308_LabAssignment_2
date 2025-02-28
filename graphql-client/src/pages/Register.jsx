@@ -29,7 +29,7 @@ const Register = () => {
     try {
       const { data } = await register({ variables: { username, email, password, role } });
       localStorage.setItem('token', data.register.token); // Store token in localStorage
-      navigate('/dashboard'); // Redirect to dashboard
+      navigate('/dashboard'); // Redirect to dashboard after registration
     } catch (err) {
       console.error('Registration failed:', err.message);
     }
