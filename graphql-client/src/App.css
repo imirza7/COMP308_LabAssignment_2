@@ -1,3 +1,4 @@
+/* Global Styles */
 #root {
   max-width: 1280px;
   margin: 0 auto;
@@ -5,46 +6,45 @@
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+/* Navbar Styles */
+.navbar {
+  background-color: #007bff;
+  padding: 10px 20px;
 }
 
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.navbar-logo {
+  color: #fff;
+  font-size: 1.5rem;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.navbar-links {
+  display: flex;
+  gap: 20px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.navbar-link {
+  color: #fff;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.3s ease;
 }
 
-.card {
-  padding: 2em;
+.navbar-link:hover {
+  color: #0056b3;
 }
 
-.read-the-docs {
-  color: #888;
-}
-
-/* Dashboard Styles */
-.dashboard-container {
+/* Home Styles */
+.home-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -54,13 +54,13 @@
   text-align: center;
 }
 
-.dashboard-container h1 {
+.home-container h1 {
   font-size: 2.5rem;
   color: #333;
   margin-bottom: 20px;
 }
 
-.dashboard-container p {
+.home-container p {
   font-size: 1.2rem;
   color: #666;
   margin-bottom: 30px;
@@ -84,6 +84,25 @@
 
 .btn:hover {
   background-color: #0056b3;
+}
+
+/* Dashboard Styles */
+.dashboard-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+}
+
+.dashboard-container h1 {
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dashboard-container h2 {
+  font-size: 1.5rem;
+  color: #444;
+  margin-top: 30px;
+  margin-bottom: 10px;
 }
 
 /* Login Styles */
@@ -133,91 +152,4 @@
 
 .login-form .btn:hover {
   background-color: #0056b3;
-}
-
-/* Register Styles */
-.register-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background-color: #f4f4f4;
-}
-
-.register-container h1 {
-  font-size: 2rem;
-  color: #333;
-  margin-bottom: 20px;
-}
-
-.register-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  width: 300px;
-  padding: 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.register-form input,
-.register-form .role-select {
-  padding: 10px;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
-
-.register-form .btn {
-  padding: 10px;
-  font-size: 1rem;
-  color: #fff;
-  background-color: #007bff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.register-form .btn:hover {
-  background-color: #0056b3;
-}
-
-/* Navbar Styles */
-.navbar {
-  background-color: #007bff;
-  padding: 10px 20px;
-}
-
-.navbar-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.navbar-logo {
-  color: #fff;
-  font-size: 1.5rem;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.navbar-links {
-  display: flex;
-  gap: 20px;
-}
-
-.navbar-link {
-  color: #fff;
-  text-decoration: none;
-  font-size: 1rem;
-  transition: color 0.3s ease;
-}
-
-.navbar-link:hover {
-  color: #0056b3;
 }
