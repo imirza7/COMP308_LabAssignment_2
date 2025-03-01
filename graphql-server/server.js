@@ -2,8 +2,8 @@ require('dotenv').config(); // Load environment variables
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
 const configureMongoose = require('./config/mongoose');
-const typeDefs = require('./graphql/typeDefs');
-const resolvers = require('./graphql/resolvers');
+const typeDefs = require('./schemas/typeDefs');
+const resolvers = require('./resolvers/resolvers');
 
 const startServer = async () => {
     await configureMongoose();
