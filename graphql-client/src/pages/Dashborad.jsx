@@ -1,7 +1,8 @@
 import React from 'react';
 import { useQuery, gql } from '@apollo/client';
-import TeamList from '../components/TeamList';
-import ProjectList from '../components/ProjectList';
+import { Link } from 'react-router-dom'; // Import Link for navigation
+import TeamList from '../members/ViewTeamDetails';
+import UpdateProjectStatus from '../members/UpdateProjectStatus';
 
 const GET_TEAMS_AND_PROJECTS = gql`
   query GetTeamsAndProjects {
@@ -36,12 +37,29 @@ const Dashboard = () => {
   const { teams, projects } = data;
 
   return (
-    <div className="dashboard-container">
-      <h1>Dashboard</h1>
+    <div>
+      <h1>Member Dashboard</h1>
+
+      {/* Navigation Links */}
+      <nav>
+        <Link to="/view-team-details">View Team Details</Link> |{' '}
+        <Link to="/view-assigned-projects">View Assigned Projects</Link> |{' '}
+        <Link to="/update-project-status">Update Project Status</Link>
+      </nav>
+
+      {/* Team List */}
       <h2>Teams</h2>
       <TeamList teams={teams} />
+
+      {/* Projects List */}
       <h2>Projects</h2>
-      <ProjectList projects={projects} />
+      {projects.map((project) => (
+        <div key={project.id}>
+          <h3>{project.projectName}</h3>
+          <p>Status: {project.status}</p>
+          <UpdateProjectStatus projectId={project.id} currentStatus={project.status} />
+        </div>
+      ))}
     </div>
   );
 };

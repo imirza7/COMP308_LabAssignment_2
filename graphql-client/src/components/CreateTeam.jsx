@@ -1,38 +1,43 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useMutation, gql } from '@apollo/client';
-import { useNavigate } from 'react-router-dom';
 
 const CREATE_TEAM_MUTATION = gql`
-  mutation CreateTeam($teamName: String!, $description: String, $members: [ID!], $teamSlogan: String) {
-    createTeam(teamName: $teamName, description: $description, members: $members, teamSlogan: $teamSlogan) {
+  mutation CreateTeam($teamName: String!, $description: String, $memberIds: [ID!]!) {
+    createTeam(teamName: $teamName, description: $description, memberIds: $memberIds) {
       id
       teamName
+      description
+      members {
+        id
+        username
+      }
     }
   }
 `;
 
 const CreateTeam = () => {
+  const navigate = useNavigate(); // Initialize useNavigate
   const [teamName, setTeamName] = useState('');
   const [description, setDescription] = useState('');
-  const [members, setMembers] = useState([]);
-  const [teamSlogan, setTeamSlogan] = useState('');
+  const [memberIds, setMemberIds] = useState([]);
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION);
-  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await createTeam({ variables: { teamName, description, members, teamSlogan } });
+      const { data } = await createTeam({ variables: { teamName, description, memberIds } });
       console.log('Team created:', data.createTeam);
-      navigate('/dashboard'); // Redirect to dashboard
+      alert('Team created successfully!');
     } catch (err) {
       console.error('Error creating team:', err.message);
+      alert('Failed to create team.');
     }
   };
 
   return (
     <div>
-      <h1>Create Team</h1>
+      <h2>Create Team</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -41,20 +46,16 @@ const CreateTeam = () => {
           onChange={(e) => setTeamName(e.target.value)}
           required
         />
-        <input
-          type="text"
+        <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
         />
-        <input
-          type="text"
-          placeholder="Team Slogan"
-          value={teamSlogan}
-          onChange={(e) => setTeamSlogan(e.target.value)}
-        />
         <button type="submit">Create Team</button>
       </form>
+
+      {/* Return Button */}
+      <button className="return-button" onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useQuery, gql } from '@apollo/client';
 
 const GET_TEAM_DETAILS = gql`
@@ -19,8 +19,9 @@ const GET_TEAM_DETAILS = gql`
   }
 `;
 
-const TeamDetails = () => {
+const ViewTeamDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate
   const { data, loading, error } = useQuery(GET_TEAM_DETAILS, {
     variables: { id },
   });
@@ -44,8 +45,11 @@ const TeamDetails = () => {
           </li>
         ))}
       </ul>
+
+      {/* Return Button */}
+      <button onClick={() => navigate('/dashboard')}>Return to Dashboard</button>
     </div>
   );
 };
 
-export default TeamDetails;
+export default ViewTeamDetails;

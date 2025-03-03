@@ -26,11 +26,27 @@ const Login = () => {
     e.preventDefault();
     try {
       const { data } = await login({ variables: { email, password } });
-      localStorage.setItem('token', data.login.token); // store token
-      localStorage.setItem('user', JSON.stringify(data.login.user)); // store user info (including role)
-      navigate('/dashboard'); // redirect to dashboard
+      const { token, user } = data.login;
+
+      // Store token and user info in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+
+      // Normalize role to lowercase
+      const normalizedRole = user.role.toLowerCase();
+
+      // Redirect based on role
+      if (normalizedRole === 'admin') {
+        navigate('/admin-dashboard'); // Redirect to admin dashboard
+      } else if (normalizedRole === 'member') {
+        navigate('/dashboard'); // Redirect to member dashboard
+      } else {
+        console.error('Unknown role:', user.role);
+        alert('You do not have access to any dashboard.');
+      }
     } catch (err) {
       console.error('Login failed:', err.message);
+      alert('Login failed. Please check your credentials.');
     }
   };
 
