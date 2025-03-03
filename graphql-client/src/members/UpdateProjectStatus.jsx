@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useMutation, gql } from '@apollo/client';
 
 const UPDATE_PROJECT_STATUS_MUTATION = gql`
@@ -14,6 +14,7 @@ const UPDATE_PROJECT_STATUS_MUTATION = gql`
 
 const UpdateProjectStatus = () => {
   const { id } = useParams();
+  const navigate = useNavigate(); // Initialize useNavigate
   const [status, setStatus] = useState('');
   const [updateProjectStatus] = useMutation(UPDATE_PROJECT_STATUS_MUTATION);
 
@@ -24,8 +25,10 @@ const UpdateProjectStatus = () => {
         variables: { id, status },
       });
       console.log('Project status updated:', data.updateProjectStatus);
+      alert('Project status updated successfully!');
     } catch (err) {
       console.error('Error updating project status:', err.message);
+      alert('Failed to update project status.');
     }
   };
 
@@ -40,6 +43,9 @@ const UpdateProjectStatus = () => {
         </select>
         <button type="submit">Update Status</button>
       </form>
+
+      {/* Return Button */}
+      <button onClick={() => navigate('/dashboard')}>Return to Dashboard</button>
     </div>
   );
 };

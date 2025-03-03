@@ -163,3 +163,18 @@
 .login-form .btn:hover {
   background-color: #0056b3;
 }
+
+/* Add this to your CSS file */
+.return-button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.return-button:hover {
+  background-color: #0056b3;
+}
