@@ -63,20 +63,22 @@ const CreateTeam = () => {
   };
 
   return (
-    <div>
-      <h2>Create Team</h2>
-      <form onSubmit={handleSubmit}>
+    <div style={containerStyle}>
+      <h2 style={headerStyle}>Create Team</h2>
+      <form onSubmit={handleSubmit} style={formStyle}>
         <input
           type="text"
           placeholder="Team Name"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           required
+          style={inputStyle}
         />
         <textarea
           placeholder="Description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          style={textareaStyle}
         />
         
         <h3>Members (Add by Username)</h3>
@@ -88,16 +90,75 @@ const CreateTeam = () => {
             value={username}
             onChange={(e) => handleMemberChange(index, e.target.value)}
             required
+            style={inputStyle}
           />
         ))}
-        <button type="button" onClick={handleAddMember}>Add Member</button>
+        <button type="button" onClick={handleAddMember} style={buttonStyle}>Add Member</button>
 
-        <button type="submit">Create Team</button>
+        <button type="submit" style={buttonStyle}>Create Team</button>
       </form>
 
-      <button className="return-button" onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
+      <button style={returnButtonStyle} onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
     </div>
   );
+};
+
+// Styles
+const containerStyle = {
+  maxWidth: '600px',
+  margin: 'auto',
+  padding: '20px',
+  background: '#f9f9f9',
+  borderRadius: '8px',
+  boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)',
+};
+
+const headerStyle = {
+  textAlign: 'center',
+  color: '#333',
+};
+
+const formStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+};
+
+const inputStyle = {
+  padding: '10px',
+  margin: '10px 0',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
+  fontSize: '16px',
+};
+
+const textareaStyle = {
+  padding: '10px',
+  margin: '10px 0',
+  border: '1px solid #ccc',
+  borderRadius: '5px',
+  fontSize: '16px',
+};
+
+const buttonStyle = {
+  padding: '10px',
+  margin: '10px 0',
+  background: '#007bff',
+  color: 'white',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  transition: 'background 0.3s',
+};
+
+const returnButtonStyle = {
+  padding: '10px',
+  marginTop: '10px',
+  background: '#6c757d',
+  color: 'white',
+  border: 'none',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  transition: 'background 0.3s',
 };
 
 export default CreateTeam;

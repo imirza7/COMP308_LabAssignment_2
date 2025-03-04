@@ -1,76 +1,54 @@
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
+import { useNavigate } from 'react-router-dom';
 
-const GET_TEAMS = gql`
-  query GetTeams {
-    teams {
+const GET_PROJECTS = gql`
+  query GetProjects {
+    projects {
       id
-      teamName
-    }
-  }
-`;
-
-const GET_TEAM_PROJECTS = gql`
-  query GetTeamProjects($id: ID!) {
-    team(id: $id) {
-      id
-      teamName
-      projects {
+      projectName
+      description
+      status
+      team {
         id
-        projectName
-        description
-        status
+        teamName
       }
     }
   }
 `;
 
 const ListAllTeamsAndProjects = () => {
-  const { data: teamsData, loading: loadingTeams, error: teamsError } = useQuery(GET_TEAMS);
-  const [selectedTeamId, setSelectedTeamId] = useState('');
+  const { data: projectsData, loading: loadingProjects, error: projectsError } = useQuery(GET_PROJECTS);
+  const [selectedProject, setSelectedProject] = useState(null);
 
-  const { data: teamData, loading: loadingProjects, error: projectsError } = useQuery(GET_TEAM_PROJECTS, {
-    variables: { id: selectedTeamId },
-    skip: !selectedTeamId, // Skip the query if no team is selected
-  });
-
-  if (loadingTeams) return <p>Loading teams...</p>;
-  if (teamsError) return <p>Error loading teams: {teamsError.message}</p>;
+  if (loadingProjects) return <p>Loading projects...</p>;
+  if (projectsError) return <p>Error loading projects: {projectsError.message}</p>;
 
   return (
-    <div>
-      <h2>Select a Team to View Projects</h2>
-      <select onChange={(e) => setSelectedTeamId(e.target.value)} value={selectedTeamId}>
-        <option value="" disabled>Select a Team</option>
-        {teamsData.teams.map((team) => (
-          <option key={team.id} value={team.id}>
-            {team.teamName}
-          </option>
-        ))}
-      </select>
+    <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px', background: '#f9f9f9', borderRadius: '8px', boxShadow: '0 2px 10px rgba(0, 0, 0, 0.1)' }}>
+      <h2 style={{ textAlign: 'center', color: '#333' }}>List of Projects</h2>
+      
+      {projectsData.projects.length > 0 ? (
+        <ul style={{ listStyleType: 'none', padding: 0 }}>
+          {projectsData.projects.map((project) => (
+            <li key={project.id} onClick={() => setSelectedProject(project)} style={{ cursor: 'pointer', padding: '10px', margin: '10px 0', border: '1px solid #ccc', borderRadius: '5px', background: '#fff' }}>
+              <h4 style={{ margin: '0', color: '#007bff' }}>{project.projectName}</h4>
+              <p style={{ margin: '5px 0' }}>{project.description || 'No description available.'}</p>
+              <p style={{ margin: '5px 0' }}>Status: <strong>{project.status}</strong></p>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No projects found.</p>
+      )}
 
-      {selectedTeamId && (
-        <div>
-          {loadingProjects && <p>Loading projects...</p>}
-          {projectsError && <p>Error loading projects: {projectsError.message}</p>}
-          {teamData && teamData.team && (
-            <div>
-              <h3>Projects for {teamData.team.teamName}</h3>
-              {teamData.team.projects.length > 0 ? (
-                <ul>
-                  {teamData.team.projects.map((project) => (
-                    <li key={project.id}>
-                      <h4>{project.projectName}</h4>
-                      <p>{project.description || 'No description available.'}</p>
-                      <p>Status: {project.status}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p>No projects found for this team.</p>
-              )}
-            </div>
-          )}
+      {selectedProject && (
+        <div style={{ marginTop: '20px', padding: '10px', border: '1px solid #007bff', borderRadius: '5px', background: '#e7f3ff' }}>
+          <h3 style={{ margin: '0' }}>Details for Project: {selectedProject.projectName}</h3>
+          <p>Description: {selectedProject.description || 'No description available.'}</p>
+          <p>Status: {selectedProject.status}</p>
+          <h4>Associated Team:</h4>
+          <p style={{ fontWeight: 'bold' }}>{selectedProject.team.teamName}</p>
         </div>
       )}
     </div>
