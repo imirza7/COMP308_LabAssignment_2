@@ -8,9 +8,10 @@ const AdminDashboard = () => {
       <nav>
         <Link to="createuser">Create User</Link> |{' '}
         <Link to="createteam">Create Team</Link> |{' '}
-        <Link to="assignproject">Assign Project to Team</Link> |{' '}
-        <Link to="listteamsprojects">List All Teams and Projects</Link> |{' '}
-        <Link to="listmembers">List All Members in a Team</Link>
+        <Link to="createproject">Create Project</Link> | {' '}
+        <Link to="assignProjectToTeam">Assign Project to Team</Link> |{' '}
+        <Link to="listAllTeamsAndProjects">List All Teams and Projects</Link> |{' '}
+        <Link to="listAllMembersInTeam">List All Members in a Team</Link>
       </nav>
       <hr />
       <Outlet /> {/* Renders the nested routes */}

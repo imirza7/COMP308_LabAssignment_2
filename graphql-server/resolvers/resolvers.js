@@ -40,16 +40,12 @@ const resolvers = {
   Mutation: {
     // Register a new user
     register: async (_, { username, email, password, role }) => {
-      // Check if user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         throw new Error('User already exists');
       }
 
-      // Hash the password
       const hashedPassword = await bcrypt.hash(password, 10);
-
-      // Create a new user
       const user = new User({
         username,
         email,
@@ -59,7 +55,6 @@ const resolvers = {
 
       await user.save();
 
-      // Generate JWT token
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: '1h',
       });
@@ -69,19 +64,16 @@ const resolvers = {
 
     // Login a user
     login: async (_, { email, password }) => {
-      // Find the user by email
       const user = await User.findOne({ email });
       if (!user) {
         throw new Error('User not found');
       }
 
-      // Validate the password
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         throw new Error('Invalid credentials');
       }
 
-      // Generate JWT token
       const token = jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, {
         expiresIn: '1h',
       });
@@ -91,10 +83,21 @@ const resolvers = {
 
     // Create a new team
     createTeam: async (_, { teamName, description, members, teamSlogan }) => {
+      // Convert emails to user IDs
+      const userIds = await Promise.all(
+        members.map(async (email) => {
+          const user = await User.findOne({ email });
+          return user ? user._id : null; // Return user ID or null if not found
+        })
+      );
+
+      // Filter out null values (invalid emails)
+      const validUserIds = userIds.filter(id => id);
+
       const team = new Team({
         teamName,
         description,
-        members,
+        members: validUserIds,
         teamSlogan,
       });
 
@@ -104,9 +107,18 @@ const resolvers = {
 
     // Update an existing team
     updateTeam: async (_, { id, teamName, description, members, status, teamSlogan }) => {
+      const userIds = await Promise.all(
+        members.map(async (email) => {
+          const user = await User.findOne({ email });
+          return user ? user._id : null; // Return user ID or null if not found
+        })
+      );
+
+      const validUserIds = userIds.filter(id => id);
+
       const team = await Team.findByIdAndUpdate(
         id,
-        { teamName, description, members, status, teamSlogan },
+        { teamName, description, members: validUserIds, status, teamSlogan },
         { new: true }
       );
 
@@ -168,6 +180,5 @@ const resolvers = {
     },
   },
 };
-
 
 module.exports = resolvers;

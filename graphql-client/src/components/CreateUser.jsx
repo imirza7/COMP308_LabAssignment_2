@@ -3,12 +3,15 @@ import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { useMutation, gql } from '@apollo/client';
 
 const CREATE_USER_MUTATION = gql`
-  mutation CreateUser($username: String!, $email: String!, $password: String!, $role: String!) {
-    createUser(username: $username, email: $email, password: $password, role: $role) {
-      id
-      username
-      email
-      role
+  mutation Register($username: String!, $email: String!, $password: String!, $role: String) {
+    register(username: $username, email: $email, password: $password, role: $role) {
+      token
+      user {
+        id
+        username
+        email
+        role
+      }
     }
   }
 `;
@@ -24,12 +27,13 @@ const CreateUser = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await createUser({ variables: { username, email, password, role } });
-      console.log('User created:', data.createUser);
+      const { data } = await createUser({ variables: { username, email, password, role: role === 'member' ? null : role } });
+      const user = data.register.user;
+      console.log('User created:', user);
       alert('User created successfully!');
     } catch (err) {
       console.error('Error creating user:', err.message);
-      alert('Failed to create user.');
+      alert('Failed to create user: ' + err.message);
     }
   };
 

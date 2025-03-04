@@ -15,6 +15,7 @@ import UpdateProjectStatus from './members/UpdateProjectStatus';
 
 import CreateTeam from './components/CreateTeam';
 import CreateUser from './components/CreateUser';
+import CreateProject from './components/CreateProject';
 import AssignProjectToTeam from './components/AssignProjectToTeam';
 import ListAllTeamsAndProjects from './components/ListAllTeamsAndProjects';
 import ListAllMembersInTeam from './components/ListAllMembersInTeam';
@@ -35,6 +36,7 @@ const App = () => {
 
         <Route path="/admin-dashboard/createTeam" element={<CreateTeam />} />
         <Route path="/admin-dashboard/createUser" element={<CreateUser />} />
+        <Route path="/admin-dashboard/createProject" element={<CreateProject/>} />
         <Route path="/admin-dashboard/assignProjectToTeam" element={<AssignProjectToTeam />} />
         <Route path="/admin-dashboard/listAllTeamsAndProjects" element={<ListAllTeamsAndProjects />} />
         <Route path="/admin-dashboard/listAllMembersInTeam" element={<ListAllMembersInTeam />} />
