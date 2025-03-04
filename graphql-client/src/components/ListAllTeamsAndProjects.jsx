@@ -1,61 +1,78 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 
-const GET_TEAMS_AND_PROJECTS = gql`
-  query GetTeamsAndProjects {
+const GET_TEAMS = gql`
+  query GetTeams {
     teams {
       id
       teamName
-      description
     }
-    projects {
+  }
+`;
+
+const GET_TEAM_PROJECTS = gql`
+  query GetTeamProjects($id: ID!) {
+    team(id: $id) {
       id
-      projectName
-      description
-      status
-      team {
+      teamName
+      projects {
         id
-        teamName
+        projectName
+        description
+        status
       }
     }
   }
 `;
 
 const ListAllTeamsAndProjects = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { data, loading, error } = useQuery(GET_TEAMS_AND_PROJECTS);
+  const { data: teamsData, loading: loadingTeams, error: teamsError } = useQuery(GET_TEAMS);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+  const { data: teamData, loading: loadingProjects, error: projectsError } = useQuery(GET_TEAM_PROJECTS, {
+    variables: { id: selectedTeamId },
+    skip: !selectedTeamId, // Skip the query if no team is selected
+  });
 
-  const { teams, projects } = data;
+  if (loadingTeams) return <p>Loading teams...</p>;
+  if (teamsError) return <p>Error loading teams: {teamsError.message}</p>;
 
   return (
     <div>
-      <h2>All Teams</h2>
-      <ul>
-        {teams.map((team) => (
-          <li key={team.id}>
-            <h3>{team.teamName}</h3>
-            <p>{team.description}</p>
-          </li>
+      <h2>Select a Team to View Projects</h2>
+      <select onChange={(e) => setSelectedTeamId(e.target.value)} value={selectedTeamId}>
+        <option value="" disabled>Select a Team</option>
+        {teamsData.teams.map((team) => (
+          <option key={team.id} value={team.id}>
+            {team.teamName}
+          </option>
         ))}
-      </ul>
+      </select>
 
-      <h2>All Projects</h2>
-      <ul>
-        {projects.map((project) => (
-          <li key={project.id}>
-            <h3>{project.projectName}</h3>
-            <p>{project.description}</p>
-            <p>Status: {project.status}</p>
-          </li>
-        ))}
-      </ul>
-
-      {/* Return Button */}
-      <button className="return-button" onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
+      {selectedTeamId && (
+        <div>
+          {loadingProjects && <p>Loading projects...</p>}
+          {projectsError && <p>Error loading projects: {projectsError.message}</p>}
+          {teamData && teamData.team && (
+            <div>
+              <h3>Projects for {teamData.team.teamName}</h3>
+              {teamData.team.projects.length > 0 ? (
+                <ul>
+                  {teamData.team.projects.map((project) => (
+                    <li key={project.id}>
+                      <h4>{project.projectName}</h4>
+                      <p>{project.description || 'No description available.'}</p>
+                      <p>Status: {project.status}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No projects found for this team.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,14 @@
-import React from 'react';
-import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
+import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
+
+const GET_TEAMS = gql`
+  query GetTeams {
+    teams {
+      id
+      teamName
+    }
+  }
+`;
 
 const GET_TEAM_MEMBERS = gql`
   query GetTeamMembers($id: ID!) {
@@ -10,37 +18,55 @@ const GET_TEAM_MEMBERS = gql`
       members {
         id
         username
-        email
       }
     }
   }
 `;
 
 const ListAllMembersInTeam = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
-  const { id } = useParams();
-  const { data, loading, error } = useQuery(GET_TEAM_MEMBERS, {
-    variables: { id },
+  const { data: teamsData, loading: loadingTeams, error: teamsError } = useQuery(GET_TEAMS);
+  const [selectedTeamId, setSelectedTeamId] = useState('');
+  
+  const { data: teamData, loading: loadingMembers, error: membersError } = useQuery(GET_TEAM_MEMBERS, {
+    variables: { id: selectedTeamId }, // Ensure you're passing 'id' here
+    skip: !selectedTeamId, // Skip the query if no team is selected
   });
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
-
-  const team = data.team;
+  if (loadingTeams) return <p>Loading teams...</p>;
+  if (teamsError) return <p>Error loading teams: {teamsError.message}</p>;
 
   return (
     <div>
-      <h2>Members of {team.teamName}</h2>
-      <ul>
-        {team.members.map((member) => (
-          <li key={member.id}>
-            {member.username} ({member.email})
-          </li>
+      <h2>Select a Team to View Members</h2>
+      <select onChange={(e) => setSelectedTeamId(e.target.value)} value={selectedTeamId}>
+        <option value="" disabled>Select a Team</option>
+        {teamsData.teams.map((team) => (
+          <option key={team.id} value={team.id}>
+            {team.teamName}
+          </option>
         ))}
-      </ul>
+      </select>
 
-      {/* Return Button */}
-      <button className="return-button" onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
+      {selectedTeamId && (
+        <div>
+          {loadingMembers && <p>Loading members...</p>}
+          {membersError && <p>Error loading members: {membersError.message}</p>}
+          {teamData && teamData.team && (
+            <div>
+              <h3>Members of {teamData.team.teamName}</h3>
+              {teamData.team.members.length > 0 ? (
+                <ul>
+                  {teamData.team.members.map((member) => (
+                    <li key={member.id}>{member.username}</li>
+                  ))}
+                </ul>
+              ) : (
+                <p>No members found in this team.</p>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };

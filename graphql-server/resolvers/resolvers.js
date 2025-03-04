@@ -6,39 +6,27 @@ const Project = require('../models/projectModel'); // Correct path
 
 const resolvers = {
   Query: {
-    // Fetch all users
     users: async () => {
       return await User.find().select('-password'); // Exclude passwords
     },
-
-    // Fetch a single user by ID
     user: async (_, { id }) => {
       return await User.findById(id).select('-password');
     },
-
-    // Fetch all teams
     teams: async () => {
       return await Team.find().populate('members');
     },
-
-    // Fetch a single team by ID
     team: async (_, { id }) => {
       return await Team.findById(id).populate('members');
     },
-
-    // Fetch all projects
     projects: async () => {
       return await Project.find().populate('team');
     },
-
-    // Fetch a single project by ID
     project: async (_, { id }) => {
       return await Project.findById(id).populate('team');
     },
   },
 
   Mutation: {
-    // Register a new user
     register: async (_, { username, email, password, role }) => {
       const existingUser = await User.findOne({ email });
       if (existingUser) {
@@ -62,7 +50,6 @@ const resolvers = {
       return { token, user };
     },
 
-    // Login a user
     login: async (_, { email, password }) => {
       const user = await User.findOne({ email });
       if (!user) {
@@ -81,35 +68,33 @@ const resolvers = {
       return { token, user };
     },
 
-    // Create a new team
     createTeam: async (_, { teamName, description, members, teamSlogan }) => {
-      // Convert emails to user IDs
+      // Convert usernames to user IDs
       const userIds = await Promise.all(
-        members.map(async (email) => {
-          const user = await User.findOne({ email });
+        members.map(async (username) => {
+          const user = await User.findOne({ username }); // Query by username
           return user ? user._id : null; // Return user ID or null if not found
         })
       );
 
-      // Filter out null values (invalid emails)
+      // Filter out null values (invalid usernames)
       const validUserIds = userIds.filter(id => id);
 
       const team = new Team({
         teamName,
         description,
-        members: validUserIds,
+        members: validUserIds, // Save valid user IDs
         teamSlogan,
       });
 
       await team.save();
-      return team;
+      return team; // Ensure this is returning the correct format
     },
 
-    // Update an existing team
     updateTeam: async (_, { id, teamName, description, members, status, teamSlogan }) => {
       const userIds = await Promise.all(
-        members.map(async (email) => {
-          const user = await User.findOne({ email });
+        members.map(async (username) => {
+          const user = await User.findOne({ username }); // Query by username
           return user ? user._id : null; // Return user ID or null if not found
         })
       );
@@ -129,7 +114,6 @@ const resolvers = {
       return team;
     },
 
-    // Delete a team
     deleteTeam: async (_, { id }) => {
       const team = await Team.findByIdAndDelete(id);
       if (!team) {
@@ -139,7 +123,6 @@ const resolvers = {
       return 'Team deleted successfully';
     },
 
-    // Create a new project
     createProject: async (_, { projectName, description, team, startDate, endDate, status }) => {
       const project = new Project({
         projectName,
@@ -154,7 +137,6 @@ const resolvers = {
       return project;
     },
 
-    // Update an existing project
     updateProject: async (_, { id, projectName, description, team, startDate, endDate, status }) => {
       const project = await Project.findByIdAndUpdate(
         id,
@@ -169,7 +151,6 @@ const resolvers = {
       return project;
     },
 
-    // Delete a project
     deleteProject: async (_, { id }) => {
       const project = await Project.findByIdAndDelete(id);
       if (!project) {
@@ -177,6 +158,23 @@ const resolvers = {
       }
 
       return 'Project deleted successfully';
+    },
+
+    assignProjectToTeam: async (_, { projectId, teamId }) => {
+      const project = await Project.findById(projectId);
+      if (!project) {
+        throw new Error('Project not found');
+      }
+
+      const team = await Team.findById(teamId);
+      if (!team) {
+        throw new Error('Team not found');
+      }
+
+      project.team = teamId; // Assuming this assigns the team to the project
+      await project.save();
+
+      return project; // Return the updated project
     },
   },
 };

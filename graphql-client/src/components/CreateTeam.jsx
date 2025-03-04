@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import { useMutation, gql } from '@apollo/client';
 
 const CREATE_TEAM_MUTATION = gql`
-  mutation CreateTeam($teamName: String!, $description: String, $members: [ID!]) {
-    createTeam(teamName: $teamName, description: $description, members: $members) {
+  mutation CreateTeam($teamName: String!, $description: String, $memberUsernames: [String!]) {
+    createTeam(teamName: $teamName, description: $description, members: $memberUsernames) {
       id
       teamName
       description
@@ -17,23 +17,35 @@ const CREATE_TEAM_MUTATION = gql`
 `;
 
 const CreateTeam = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate(); 
   const [teamName, setTeamName] = useState('');
   const [description, setDescription] = useState('');
-  const [memberIds, setMemberIds] = useState(['']); // Initialize with an empty string to allow for input
+  const [memberUsernames, setMemberUsernames] = useState(['']); 
 
   const [createTeam] = useMutation(CREATE_TEAM_MUTATION);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const filteredUsernames = memberUsernames.filter(username => username.trim());
+
+    if (filteredUsernames.length === 0) {
+      alert('Please add at least one member username.');
+      return;
+    }
+
     try {
-      const { data } = await createTeam({ variables: { teamName, description, members: memberIds.filter(id => id) } });
+      const { data } = await createTeam({
+        variables: { 
+          teamName, 
+          description, 
+          memberUsernames: filteredUsernames 
+        }
+      });
       console.log('Team created:', data.createTeam);
       alert('Team created successfully!');
-      // Optionally clear form fields
       setTeamName('');
       setDescription('');
-      setMemberIds(['']); // Reset member IDs
+      setMemberUsernames(['']); 
     } catch (err) {
       console.error('Error creating team:', err.message);
       alert('Failed to create team: ' + err.message);
@@ -41,13 +53,13 @@ const CreateTeam = () => {
   };
 
   const handleAddMember = () => {
-    setMemberIds([...memberIds, '']); // Add an empty string for a new input
+    setMemberUsernames([...memberUsernames, '']); 
   };
 
   const handleMemberChange = (index, value) => {
-    const updatedMemberIds = [...memberIds];
-    updatedMemberIds[index] = value; // Update the specific member ID
-    setMemberIds(updatedMemberIds);
+    const updatedMemberUsernames = [...memberUsernames];
+    updatedMemberUsernames[index] = value; 
+    setMemberUsernames(updatedMemberUsernames);
   };
 
   return (
@@ -67,14 +79,15 @@ const CreateTeam = () => {
           onChange={(e) => setDescription(e.target.value)}
         />
         
-        <h3>Members</h3>
-        {memberIds.map((id, index) => (
+        <h3>Members (Add by Username)</h3>
+        {memberUsernames.map((username, index) => (
           <input
             key={index}
             type="text"
-            placeholder="Member ID"
-            value={id}
+            placeholder="Member Username"
+            value={username}
             onChange={(e) => handleMemberChange(index, e.target.value)}
+            required
           />
         ))}
         <button type="button" onClick={handleAddMember}>Add Member</button>
@@ -82,7 +95,6 @@ const CreateTeam = () => {
         <button type="submit">Create Team</button>
       </form>
 
-      {/* Return Button */}
       <button className="return-button" onClick={() => navigate('/admin-dashboard')}>Return to Admin Dashboard</button>
     </div>
   );
